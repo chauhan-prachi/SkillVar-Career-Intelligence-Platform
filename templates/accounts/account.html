@@ -1,6 +1,71 @@
-{% extends "base.html" %}{% block title %}Your account{% endblock %}
-{% block content %}<div style="max-width:40rem"><h1>Your account</h1>
-<div class="card mb-3"><div class="card-body"><dl class="row mb-0"><dt class="col-sm-4">Username</dt><dd class="col-sm-8">{{ user.username }}</dd><dt class="col-sm-4">Email</dt><dd class="col-sm-8">{{ user.email }}</dd>
-<dt class="col-sm-4">Career goal</dt><dd class="col-sm-8">{{ profile.career_goal|default:"Not set" }}</dd></dl></div></div>
-<a class="btn btn-outline-primary" href="{% url 'onboarding' %}">Edit profile</a> <a class="btn btn-outline-primary" href="{% url 'onboarding_skills' %}">Update self-assessment</a>
-<hr><h2>Your data</h2><p class="small text-secondary">You can delete any resume or job analysis from its page; the stored file, the extracted text and everything derived from it are removed. To delete your whole account, contact the site administrator.</p></div>{% endblock %}
+{% extends "base.html" %}
+{% block title %}My Account | SkillVar{% endblock %}
+
+{% block content %}
+<div class="account-page">
+
+    <div class="account-heading">
+        <span class="eyebrow">ACCOUNT SETTINGS</span>
+        <h1>Your account</h1>
+        <p>Manage your profile and career preferences.</p>
+    </div>
+
+    <div class="card account-card mb-4">
+        <div class="card-body">
+            <div class="account-profile">
+                <div class="account-avatar">
+                    {{ user.username|first|upper }}
+                </div>
+                <div>
+                    <h2>{{ user.username }}</h2>
+                    <p class="mb-0">SkillVar member</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="account-detail">
+                <span>Username</span>
+                <strong>{{ user.username }}</strong>
+            </div>
+
+            <div class="account-detail">
+                <span>Email address</span>
+                <strong>{{ user.email|default:"Not provided" }}</strong>
+            </div>
+
+            <div class="account-detail">
+                <span>Career goal</span>
+                <strong>{{ profile.career_goal|default:"Not set" }}</strong>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <a class="btn btn-primary"
+                   href="{% url 'onboarding' %}">
+                    Edit profile
+                </a>
+
+                <a class="btn btn-outline-secondary"
+                   href="{% url 'onboarding_skills' %}">
+                    Update skills
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card account-card">
+        <div class="card-body">
+            <span class="eyebrow">PRIVACY & DATA</span>
+            <h2 class="h5 mt-2">Your data matters</h2>
+
+            <p class="mb-0">
+                You can delete individual resumes or job analyses from
+                their respective pages. This removes the stored file,
+                extracted text, and associated records. To delete your
+                entire account, contact the site administrator.
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
