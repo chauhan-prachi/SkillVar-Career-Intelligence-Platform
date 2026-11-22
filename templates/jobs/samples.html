@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block title %}Sample jobs{% endblock %}
+{% block content %}<h1>Sample jobs</h1>
+<div class="alert alert-info small" role="note">These postings come from the shared reference dataset. If it was loaded from the generator, they are <strong>synthetic</strong> and are not real vacancies.</div>
+<form method="get" class="row g-2 mb-3"><div class="col-sm-8 col-md-6"><label class="visually-hidden" for="q">Search</label><input class="form-control" id="q" name="q" value="{{ q }}" placeholder="Search by title or company"></div><div class="col-auto"><button class="btn btn-outline-primary">Search</button></div></form>
+{% if page.object_list %}<div class="card"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Title</th><th>Company</th><th>Requirements</th><th></th></tr></thead><tbody>
+{% for j in page %}<tr><th scope="row"><a href="{% url 'job_detail' j.pk %}">{{ j.title }}</a>{% if j.is_synthetic %} <span class="badge badge-outline">Synthetic</span>{% endif %}</th><td>{{ j.company|default:"–" }}</td><td>{{ j.n }}</td>
+<td class="text-end"><form method="post" action="{% url 'job_match' j.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-primary" type="submit">Match me</button></form></td></tr>{% endfor %}</tbody></table></div></div>{% include "includes/_pagination.html" %}
+{% else %}<div class="card"><div class="card-body empty">No sample jobs found{% if q %} for “{{ q }}”{% endif %}. Staff can load a dataset with <code>python manage.py ingest_jobs</code>.</div></div>{% endif %}{% endblock %}

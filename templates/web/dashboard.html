@@ -1,0 +1,72 @@
+{% extends "base.html" %}{% load skillvar %}{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard-page">
+<header class="page-heading d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <div><h1 class="mb-1">Your dashboard</h1><p class="text-secondary mb-0">{% if goal %}Working toward <strong>{{ goal.title }}</strong> · <a href="{% url 'onboarding' %}">change</a>{% else %}Choose a career goal to unlock readiness and roadmaps.{% endif %}</p></div>
+  <a class="btn btn-primary" href="{% url 'assessment_list' %}">Take an assessment</a>
+</header>
+
+{% if not goal %}
+<div class="card mb-4"><div class="card-body empty"><h2>Let's set up your profile</h2><p>Tell SkillVar your career goal and what you already know. It takes about two minutes.</p><a class="btn btn-primary" href="{% url 'onboarding' %}">Start onboarding</a></div></div>
+{% endif %}
+
+<div class="row g-3 mb-4 dashboard-stats">
+  <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body"><div class="metric-label">Profile completion</div><div class="metric">{{ completion }}%</div>
+    <div class="progress mt-2" role="progressbar" aria-label="Profile completion" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width:{{ completion }}%"></div></div>
+    {% if missing %}<div class="small text-muted mt-2">Missing: {{ missing|join:", " }}</div>{% endif %}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body"><div class="metric-label">Readiness (expected)</div>
+    {% if readiness and readiness.score is not None %}<div class="metric">{{ readiness.score|pct }}</div><div class="small text-muted">Conservative {{ readiness.conservative|pct }} · <a href="{% url 'readiness' %}">details</a></div>
+    {% else %}<div class="metric text-muted">–</div><div class="small text-muted">Set a career goal</div>{% endif %}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body"><div class="metric-label">Evidence coverage</div>
+    {% if readiness %}<div class="metric">{{ readiness.evidence_coverage|pct }}</div><div class="small text-muted">{{ readiness.confidence }}</div>
+    {% else %}<div class="metric text-muted">–</div>{% endif %}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body"><div class="metric-label">Resumes analyzed</div><div class="metric">{{ resume_count }}</div><a class="small" href="{% url 'resume_upload' %}">Upload a resume</a></div></div></div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card mb-4"><div class="card-header">Recommended next action</div><div class="card-body">
+      {% if next %}
+        <span class="badge badge-soft-blue text-uppercase mb-2">{{ next.kind }}</span> <strong>{{ next.skill_name }}</strong>
+        <p class="mb-3 mt-1">{{ next.reason }}</p>
+        {% if next.kind == 'practice' %}<a class="btn btn-primary btn-sm" href="{% url 'roadmap' %}">Open your roadmap</a>
+        {% elif next.assessment_slug %}<a class="btn btn-primary btn-sm" href="{% url 'assessment_take' next.assessment_slug %}">Go to the assessment</a>{% endif %}
+      {% elif goal %}<p class="text-secondary mb-0">No further action is available right now. Everything assessable for your goal is decided, or no unused assessment items remain.</p>
+      {% else %}<p class="text-secondary mb-0">Choose a career goal and SkillVar will recommend a first step.</p>{% endif %}
+    </div></div>
+
+    <div class="card mb-4"><div class="card-header">Readiness over time</div><div class="card-body">
+      {% if trend.score|length >= 2 %}<div class="chart-box"><canvas id="trendChart" aria-label="Readiness trend chart" role="img"></canvas></div>
+      {% else %}<div class="empty py-4">A trend appears after at least two assessed results.<br><a href="{% url 'assessment_list' %}">Take an assessment</a></div>{% endif %}
+      {{ trend|json_script:"trend-data" }}
+    </div></div>
+
+    <div class="card"><div class="card-header">Important skill gaps</div>
+      {% if gaps %}<div class="table-responsive"><table class="table mb-0"><thead><tr><th>Skill</th><th>Status</th><th>Role weight</th></tr></thead><tbody>
+        {% for g in gaps %}<tr><th scope="row">{{ g.name }}</th><td><span class="badge {{ g.status|status_badge }}">{{ g.status|status_label }}</span></td><td>{{ g.importance }}</td></tr>{% endfor %}</tbody></table></div>
+      {% else %}<div class="card-body empty py-4">{% if goal %}No missing or weak skills found among your target role's requirements.{% else %}Gaps appear once you choose a goal.{% endif %}</div>{% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card mb-4"><div class="card-header">Skill evidence</div><div class="card-body">
+      {% if evidence_total %}<div class="chart-box"><canvas id="evidenceChart" aria-label="Skills by evidence type" role="img"></canvas></div><a class="small" href="{% url 'my_skills' %}">See every skill</a>
+      {% else %}<div class="empty py-3">No skill evidence yet. Add self-assessments, upload a resume or take an assessment.</div>{% endif %}
+      {{ evidence_chart|json_script:"evidence-data" }}
+    </div></div>
+    <div class="card mb-4"><div class="card-header">Roadmap progress</div><div class="card-body">
+      {% if roadmap %}<div class="metric">{{ roadmap.pct }}%</div><div class="small text-muted mb-2">{{ roadmap.done }} of {{ roadmap.total }} items done</div><a class="btn btn-outline-primary btn-sm" href="{% url 'roadmap' %}">Open roadmap</a>
+      {% else %}<p class="small text-secondary">You have no roadmap yet.</p>{% if goal %}<form method="post" action="{% url 'roadmap_generate' %}">{% csrf_token %}<button class="btn btn-outline-primary btn-sm">Generate roadmap</button></form>{% endif %}{% endif %}
+    </div></div>
+    <div class="card mb-4"><div class="card-header">Recent assessments</div><ul class="list-group list-group-flush">
+      {% for a in attempts %}<li class="list-group-item d-flex justify-content-between"><a href="{% url 'attempt_result' a.pk %}">{{ a.assessment.title }}</a><span>{{ a.score|pct }}</span></li>
+      {% empty %}<li class="list-group-item text-muted small">No assessments taken yet.</li>{% endfor %}</ul></div>
+    <div class="card mb-4"><div class="card-header">Recent job matches</div><ul class="list-group list-group-flush">
+      {% for m in matches %}<li class="list-group-item d-flex justify-content-between"><a href="{% url 'match_detail' m.pk %}">{{ m.job.title|default:"Untitled job" }}</a><span>{{ m.score|pct }}</span></li>
+      {% empty %}<li class="list-group-item text-muted small">No matches yet. <a href="{% url 'job_analyze' %}">Analyze a job description</a>.</li>{% endfor %}</ul></div>
+    {% if user.is_staff and last_run %}<div class="card"><div class="card-header">Data pipeline (staff)</div><div class="card-body small">Last run #{{ last_run.pk }}: {{ last_run.get_status_display }} · {{ last_run.rows_loaded }} loaded, {{ last_run.rows_rejected }} rejected. <a href="{% url 'dataops_runs' %}">All runs</a></div></div>{% endif %}
+  </div>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% load static %}{% static 'vendor/chart.umd.js' %}"></script>{% endblock %}

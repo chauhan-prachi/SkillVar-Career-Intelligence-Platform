@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% load skillvar %}{% block title %}Self-assessment{% endblock %}
+{% block content %}<div class="mx-auto" style="max-width:44rem">
+  <p class="eyebrow mb-1">Step 2 of 2</p><h1>What do you believe you know?</h1>
+  <div class="note my-3 small"><strong>These are your claims, not verified skills.</strong> SkillVar records them as <em>self-reported</em>. They carry little weight until you take assessments, and they can never override assessment results. These are the skills that matter most for <strong>{{ goal.title }}</strong>.</div>
+  <form method="post" novalidate>{% csrf_token %}
+    <div class="row">{% for s, name in form.skill_fields %}<div class="col-md-6">{% with field=form|get_field:name %}{% include "includes/_field.html" %}{% endwith %}</div>{% endfor %}</div>
+    <button class="btn btn-primary" type="submit">Finish setup</button> <a class="btn btn-link" href="{% url 'dashboard' %}">Skip for now</a>
+  </form></div>{% endblock %}

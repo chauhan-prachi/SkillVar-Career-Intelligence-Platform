@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% load skillvar %}{% block title %}My skills{% endblock %}
+{% block content %}<h1>My skills and their evidence</h1>
+{% if rows %}<div class="card"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Skill</th><th>Category</th><th>Evidence type</th><th>Class</th><th>Assessments</th></tr></thead><tbody>
+{% for r in rows %}<tr><th scope="row">{{ r.skill.name }}{% if r.sig.claimed is not None %}<div class="small text-muted fw-normal">You claimed: {{ r.sig.claimed|level_label }}</div>{% endif %}</th><td>{{ r.skill.category.name }}</td><td>{{ r.label }}</td><td><span class="badge {{ r.status|status_badge }}">{{ r.status_label }}</span></td><td>{{ r.sig.n_assessments }}</td></tr>{% endfor %}</tbody></table></div></div>
+{% else %}<div class="card"><div class="card-body empty">You have no skills with evidence yet. <a href="{% url 'onboarding_skills' %}">Add a self-assessment</a>, <a href="{% url 'resume_upload' %}">upload a resume</a> or <a href="{% url 'assessment_list' %}">take an assessment</a>.</div></div>{% endif %}{% endblock %}

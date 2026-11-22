@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% block title %}Roadmap{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3"><div><h1 class="mb-1">Roadmap: {{ role.title }}</h1>{% if roadmap %}<p class="text-secondary mb-0">{{ done }} of {{ items|length }} done · generated {{ roadmap.created_at|date:"j M Y" }}</p>{% endif %}</div>
+  <form method="post" action="{% url 'roadmap_generate' %}">{% csrf_token %}<button class="btn btn-{% if roadmap %}outline-primary{% else %}primary{% endif %}" type="submit">{% if roadmap %}Regenerate from my latest evidence{% else %}Generate my roadmap{% endif %}</button></form></div>
+{% if roadmap %}<div class="progress mb-4" role="progressbar" aria-label="Roadmap progress" aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width:{{ pct }}%"></div></div>{% endif %}
+{% if items %}
+<div class="note small mb-4">Skills that still need evidence for your target role, with prerequisites first. Finishing an item records <em>practical evidence</em>, which unlocks a half-weight re-test; assessed results are what prove a skill.</div>
+{% for i in items %}<div class="card mb-3"><div class="card-body">
+  <div class="d-flex flex-wrap justify-content-between gap-2"><div class="d-flex gap-3"><span class="step-num">{{ i.position }}</span><div><h2 class="h5 mb-1">{{ i.skill.name }}</h2><p class="small text-secondary mb-2">{{ i.reason }}</p></div></div>
+    <span class="badge {% if i.status == 'done' %}text-bg-success{% elif i.status == 'doing' %}badge-soft-blue{% else %}badge-outline{% endif %} align-self-start">{{ i.get_status_display }}</span></div>
+  {% if i.resource %}<p class="small mb-1"><strong>Activity:</strong> {{ i.resource.title }}: {{ i.resource.description }}</p>{% endif %}
+  <p class="small mb-1"><strong>Practice task:</strong> {{ i.practice_task }}</p><p class="small mb-2"><strong>You are done when:</strong> {{ i.completion_criteria }}</p>
+  {% if i.status == 'done' %}{% if i.evidence_note %}<p class="small text-muted mb-0">Your note: {{ i.evidence_note }}</p>{% endif %}
+  {% else %}<form method="post" action="{% url 'roadmap_item' i.pk %}" class="row g-2 align-items-end">{% csrf_token %}
+    <div class="col-md-7"><label class="form-label small" for="note{{ i.pk }}">Evidence of completion (optional: a link or a short note)</label><input class="form-control form-control-sm" id="note{{ i.pk }}" name="note" maxlength="1000"></div>
+    <div class="col-md-5 d-flex gap-2"><button class="btn btn-sm btn-primary" name="action" value="complete" type="submit">Mark done</button>{% if i.status == 'todo' %}<button class="btn btn-sm btn-outline-secondary" name="action" value="doing" type="submit">Start</button>{% else %}<button class="btn btn-sm btn-outline-secondary" name="action" value="todo" type="submit">Pause</button>{% endif %}</div></form>{% endif %}
+</div></div>{% endfor %}
+{% elif roadmap %}<div class="card"><div class="card-body empty">Every skill required for this role is confirmed by assessment. Nothing left to learn here.</div></div>
+{% else %}<div class="card"><div class="card-body empty"><p>Generate a roadmap to see the skills you still need to prove for {{ role.title }}, in a sensible order.</p></div></div>{% endif %}{% endblock %}

@@ -1,0 +1,36 @@
+<nav class="navbar navbar-expand-lg navbar-sv" aria-label="Main navigation">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'home' %}">Skill<span class="brand-mark">Var</span></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      {% if user.is_authenticated %}
+        <ul class="navbar-nav me-auto">
+          {% with p=request.path %}
+            <li class="nav-item"><a class="nav-link {% if p == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}">Overview</a></li>
+            <li class="nav-item"><a class="nav-link {% if '/resumes' in p %}active{% endif %}" href="{% url 'resume_list' %}">Resumes</a></li>
+            <li class="nav-item"><a class="nav-link {% if '/jobs' in p or '/matches' in p %}active{% endif %}" href="{% url 'job_list' %}">Jobs</a></li>
+            <li class="nav-item"><a class="nav-link {% if '/assessments' in p %}active{% endif %}" href="{% url 'assessment_list' %}">Assessments</a></li>
+            <li class="nav-item"><a class="nav-link {% if p == '/readiness/' or p == '/skills/' %}active{% endif %}" href="{% url 'readiness' %}">Readiness</a></li>
+            <li class="nav-item"><a class="nav-link {% if '/roadmap' in p %}active{% endif %}" href="{% url 'roadmap' %}">Roadmap</a></li>
+            {% if user.is_staff %}<li class="nav-item"><a class="nav-link {% if '/data' in p %}active{% endif %}" href="{% url 'dataops_runs' %}">Data</a></li>{% endif %}
+          {% endwith %}
+        </ul>
+        <div class="d-flex flex-wrap align-items-center gap-2 py-2 py-lg-0">
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'account' %}">{{ user.username }}</a>
+          <form method="post" action="{% url 'logout' %}" class="m-0">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit">Log out</button></form>
+        </div>
+      {% else %}
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#how-it-works">How it works</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#evidence">Our approach</a></li>
+        </ul>
+        <div class="d-flex gap-2 py-2 py-lg-0">
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'login' %}">Log in</a>
+          <a class="btn btn-sm btn-primary" href="{% url 'register' %}">Get started</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</nav>

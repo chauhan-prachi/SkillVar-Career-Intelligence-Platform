@@ -1,0 +1,5 @@
+{% load skillvar %}
+<tr><th scope="row" class="fw-medium">{{ s.name }}<div class="small text-muted fw-normal">{{ s.kind|capfirst }}</div></th>
+<td><span class="badge {{ s.status|status_badge }}">{{ s.status|status_label }}</span></td>
+<td class="small">{{ s.label_code|code_label }}</td>
+<td style="min-width:9rem"><div class="progress" role="progressbar" aria-label="{{ s.name }} credit" aria-valuenow="{{ s.expected|pct_int }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width:{{ s.expected|pct_int }}%"></div></div><div class="small text-muted">{{ s.expected|pct }} credit</div></td></tr>

@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block title %}{{ assessment.title }}{% endblock %}
+{% block content %}<div class="mx-auto" style="max-width:52rem">
+<nav aria-label="breadcrumb"><ol class="breadcrumb small"><li class="breadcrumb-item"><a href="{% url 'assessment_list' %}">Assessments</a></li><li class="breadcrumb-item active">{{ assessment.title }}</li></ol></nav>
+<h1>{{ assessment.title }}</h1><p class="text-secondary">{{ assessment.description }} You may leave questions blank; only answered questions are scored.</p>
+{% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+<form method="post" novalidate data-loading="Grading…">{% csrf_token %}
+{% for q in questions %}<div class="q-block mb-3"><div class="d-flex justify-content-between gap-2"><p class="fw-medium mb-2">{{ forloop.counter }}. {{ q.prompt }}</p><span class="badge badge-outline align-self-start text-nowrap">{{ q.skill.name }}</span></div>
+{% if not q.eligible %}<div class="alert alert-warning py-2 small">You have answered this before. A re-attempt is recorded but will not change your estimate until you complete practice for this skill.</div>{% endif %}
+{% if q.kind == 'mcq' %}<fieldset><legend class="visually-hidden">Choose one answer for question {{ forloop.counter }}</legend>
+  {% for opt in q.options %}<div class="form-check mb-1"><input class="form-check-input" type="radio" name="q{{ q.id }}" id="q{{ q.id }}o{{ forloop.counter0 }}" value="{{ forloop.counter0 }}" {% if q.posted == forloop.counter0|stringformat:"s" %}checked{% endif %}><label class="form-check-label" for="q{{ q.id }}o{{ forloop.counter0 }}">{{ opt }}</label></div>{% endfor %}</fieldset>
+{% else %}<p class="small mb-1"><strong>Tables</strong></p><pre class="sql-schema">{{ q.sql_config.schema }}</pre>
+  <label class="form-label small" for="q{{ q.id }}">Your SQL (a single read-only SELECT)</label><textarea class="form-control code" name="q{{ q.id }}" id="q{{ q.id }}" rows="5" maxlength="5000" spellcheck="false">{{ q.posted }}</textarea>{% endif %}
+</div>{% endfor %}
+<button class="btn btn-primary" type="submit">Submit answers</button> <a class="btn btn-link" href="{% url 'assessment_list' %}">Cancel</a></form></div>{% endblock %}

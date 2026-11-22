@@ -1,0 +1,36 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+
+# Local data and generated files
+*.sqlite3
+*.sqlite3-journal
+private_media/
+media/
+staticfiles/
+*.log
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build and coverage
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# IDE
+*.code-workspace

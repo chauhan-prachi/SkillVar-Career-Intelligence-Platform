@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% load skillvar %}{% block title %}Result{% endblock %}
+{% block content %}<div class="mx-auto" style="max-width:52rem"><h1>{{ attempt.assessment.title }}: result</h1>
+<div class="card mb-4"><div class="card-body d-flex align-items-center gap-4"><div><div class="metric-label">Score</div><div class="metric">{{ attempt.score|pct }}</div></div><p class="mb-0 text-secondary small">Taken {{ attempt.created_at|date:"j M Y H:i" }}. This score describes this one assessment. It does not define your ability, and your skill estimates also depend on how much evidence exists.</p></div></div>
+{% if any_uncounted %}<div class="alert alert-warning small">Some answers were repeat attempts without practice in between. They are recorded but did not change your estimates.</div>{% endif %}
+{% for a in answers %}<div class="q-block mb-3"><div class="d-flex justify-content-between gap-2"><p class="fw-medium mb-1">{{ forloop.counter }}. {{ a.question.prompt }}</p><span class="badge {% if a.score >= 1 %}text-bg-success{% elif a.score > 0 %}text-bg-warning{% else %}text-bg-danger{% endif %}">{{ a.score|pct }}</span></div>
+<div class="small text-muted mb-1">{{ a.question.skill.name }}{% if not a.counted %} · not counted{% endif %}</div>
+{% if a.question.kind == 'sql' %}<pre class="sql-schema mb-2">{{ a.answer_text }}</pre>{% endif %}<p class="mb-0 small">{{ a.feedback }}</p></div>{% endfor %}
+<a class="btn btn-primary" href="{% url 'readiness' %}">See readiness</a> <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Dashboard</a></div>{% endblock %}

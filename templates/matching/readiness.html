@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% load skillvar %}{% block title %}Readiness{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-end mb-3"><h1 class="mb-0">Readiness: {{ role.title }}</h1><a class="btn btn-outline-secondary btn-sm" href="{% url 'my_skills' %}">All my skills</a></div>
+<div class="row g-3 mb-4">
+  <div class="col-sm-4"><div class="card h-100"><div class="card-body"><div class="metric-label">Expected readiness</div><div class="metric">{{ r.score|pct }}</div><p class="small text-muted mb-0">Role-weighted credit. Claims and resume context count for less than assessed evidence.</p></div></div></div>
+  <div class="col-sm-4"><div class="card h-100"><div class="card-body"><div class="metric-label">Conservative readiness</div><div class="metric">{{ r.conservative|pct }}</div><p class="small text-muted mb-0">Counts only the lower bound of assessed skills. Thin evidence lowers it.</p></div></div></div>
+  <div class="col-sm-4"><div class="card h-100"><div class="card-body"><div class="metric-label">Evidence coverage</div><div class="metric">{{ r.evidence_coverage|pct }}</div><p class="small text-muted mb-0">{{ r.confidence }}. Share of the role's weight with evidence beyond a claim.</p></div></div></div>
+</div>
+<div class="note small mb-4">Readiness is an estimate from the evidence you have provided, measured against this role's skill requirements (required skills weigh more than preferred). It is not a probability of being hired, and a low number often just means "not assessed yet".</div>
+<div class="row g-4">
+  <div class="col-lg-8"><div class="card"><div class="card-header">Skill by skill</div><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Skill</th><th>Class</th><th>Evidence</th><th>Credit</th></tr></thead><tbody>
+    {% for s in r.skills %}{% include "includes/_skill_row.html" %}{% endfor %}</tbody></table></div></div></div>
+  <div class="col-lg-4">
+    <div class="card mb-3"><div class="card-header">Strengths (assessment-confirmed)</div><div class="card-body small">{% for s in strengths %}<div>{{ s.name }} <span class="text-muted">{{ s.expected|pct }}</span></div>{% empty %}<span class="text-muted">None confirmed yet.</span>{% endfor %}</div></div>
+    <div class="card mb-3"><div class="card-header">Gaps</div><div class="card-body small">{% for s in gaps %}<div>{{ s.name }} <span class="badge {{ s.status|status_badge }}">{{ s.status|status_label }}</span></div>{% empty %}<span class="text-muted">No missing or weak skills.</span>{% endfor %}</div></div>
+    <div class="card mb-3"><div class="card-header">Needs verification</div><div class="card-body small">{% for s in unverified %}<div>{{ s.name }}</div>{% empty %}<span class="text-muted">Nothing outstanding.</span>{% endfor %}</div></div>
+    <div class="card"><div class="card-header">History</div><div class="card-body small">{% if snaps|length >= 2 %}{{ snaps|length }} snapshots recorded. <a href="{% url 'dashboard' %}">See the trend on your dashboard</a>.{% else %}A trend needs at least two snapshots, which are saved each time an assessment changes your evidence.{% endif %}</div></div>
+  </div>
+</div>{% endblock %}

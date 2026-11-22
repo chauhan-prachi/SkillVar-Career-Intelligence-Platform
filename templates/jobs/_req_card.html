@@ -1,0 +1,6 @@
+<div class="card mb-4"><div class="card-header">{{ title }} ({{ items|length }})</div>
+{% if items %}<ul class="list-group list-group-flush">{% for r in items %}
+  <li class="list-group-item d-flex justify-content-between align-items-start gap-2"><div><strong>{{ r.skill.name }}</strong>{% if r.edited_by_user %} <span class="badge badge-outline">Edited</span>{% endif %}<div class="snippet">“{{ r.snippet }}”</div></div>
+  {% if owned %}<form method="post" action="{% url 'job_requirements' job.pk %}" class="d-flex gap-1">{% csrf_token %}<input type="hidden" name="skill_id" value="{{ r.skill_id }}">
+    <button class="btn btn-sm btn-outline-secondary" name="action" value="toggle" type="submit">Make {% if kind == 'required' %}preferred{% else %}required{% endif %}</button><button class="btn btn-sm btn-outline-danger" name="action" value="remove" type="submit" aria-label="Remove {{ r.skill.name }}">Remove</button></form>{% endif %}</li>{% endfor %}</ul>
+{% else %}<div class="card-body small text-muted">None detected.</div>{% endif %}</div>

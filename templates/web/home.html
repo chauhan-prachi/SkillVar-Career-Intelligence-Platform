@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Evidence-based career intelligence{% endblock %}
+
+{% block wide %}
+<div class="container pt-3">{% include "includes/_messages.html" %}</div>
+
+<section class="hero py-5 py-lg-6">
+  <div class="container py-lg-4">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7">
+        <p class="eyebrow mb-3">Career intelligence, grounded in evidence</p>
+        <h1 class="display-5 fw-bold mb-4">Know what you know.<br><span style="color:var(--sv-primary)">Prove what you can do.</span></h1>
+        <p class="lead text-secondary mb-4">Turn your resume, assessments and target roles into a clear picture of your skills and next steps.</p>
+        <div class="d-flex flex-wrap gap-2">
+          {% if user.is_authenticated %}
+            <a class="btn btn-primary btn-lg" href="{% url 'dashboard' %}">Open dashboard</a>
+          {% else %}
+            <a class="btn btn-primary btn-lg" href="{% url 'register' %}">Create your account</a>
+            <a class="btn btn-outline-secondary btn-lg" href="{% url 'login' %}">Log in</a>
+          {% endif %}
+        </div>
+        <p class="small text-secondary mt-3 mb-0">Your resume and job text stay on your SkillVar server. No external AI service is used.</p>
+      </div>
+      <div class="col-lg-5">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4 p-lg-5">
+            <p class="eyebrow mb-3">Evidence, not assumptions</p>
+            <div class="d-flex align-items-center gap-3 py-3 border-bottom">
+              <span class="step-num">01</span>
+              <div><strong class="d-block">Resume signals</strong><span class="small text-secondary">What your documents mention</span></div>
+            </div>
+            <div class="d-flex align-items-center gap-3 py-3 border-bottom">
+              <span class="step-num">02</span>
+              <div><strong class="d-block">Assessment results</strong><span class="small text-secondary">What you can demonstrate</span></div>
+            </div>
+            <div class="d-flex align-items-center gap-3 pt-3">
+              <span class="step-num">03</span>
+              <div><strong class="d-block">Job alignment</strong><span class="small text-secondary">Where your evidence fits the role</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5" id="how-it-works">
+  <div class="container">
+    <div class="mb-4">
+      <p class="eyebrow mb-1">A clear workflow</p>
+      <h2 class="mb-1">From profile to practical next steps</h2>
+      <p class="text-secondary mb-0">A focused toolkit for understanding and improving role readiness.</p>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4"><article class="card h-100"><div class="card-body"><span class="step-num mb-3">1</span><h3 class="mt-3">Set a target role</h3><p class="small mb-0">Choose a role and record your current skills.</p></div></article></div>
+      <div class="col-md-6 col-lg-4"><article class="card h-100"><div class="card-body"><span class="step-num mb-3">2</span><h3 class="mt-3">Review your resume</h3><p class="small mb-0">Extract skills and check the evidence found in your document.</p></div></article></div>
+      <div class="col-md-6 col-lg-4"><article class="card h-100"><div class="card-body"><span class="step-num mb-3">3</span><h3 class="mt-3">Test your skills</h3><p class="small mb-0">Use knowledge and SQL assessments to build stronger evidence.</p></div></article></div>
+      <div class="col-md-6 col-lg-4"><article class="card h-100"><div class="card-body"><span class="step-num mb-3">4</span><h3 class="mt-3">Analyze a job</h3><p class="small mb-0">Compare your profile with a job description.</p></div></article></div>
+      <div class="col-md-6 col-lg-4"><article class="card h-100"><div class="card-body"><span class="step-num mb-3">5</span><h3 class="mt-3">Understand readiness</h3><p class="small mb-0">Inspect strengths, gaps, evidence coverage and score details.</p></div></article></div>
+      <div class="col-md-6 col-lg-4"><article class="card h-100"><div class="card-body"><span class="step-num mb-3">6</span><h3 class="mt-3">Follow a roadmap</h3><p class="small mb-0">Work through skill prerequisites and practice tasks.</p></div></article></div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-white border-top" id="evidence">
+  <div class="container">
+    <div class="row g-4 align-items-start">
+      <div class="col-lg-6">
+        <p class="eyebrow mb-1">Transparent by design</p>
+        <h2>Not all skill signals are equal</h2>
+        <p class="text-secondary">SkillVar keeps self-reported skills, resume mentions and assessment results distinct. Each contributes differently to the match estimate.</p>
+        <ul class="list-unstyled d-grid gap-3 mb-0">
+          <li><strong>Self-reported</strong><span class="d-block small text-secondary">A skill you say you know.</span></li>
+          <li><strong>Resume evidence</strong><span class="d-block small text-secondary">A skill mentioned in experience or projects.</span></li>
+          <li><strong>Assessment-tested</strong><span class="d-block small text-secondary">A skill evaluated through questions or executed SQL.</span></li>
+        </ul>
+      </div>
+      <div class="col-lg-6">
+        <div class="note">
+          <strong>Important:</strong> SkillVar scores are estimates for a specific role, not hiring probabilities or ATS scores. They are designed to help users inspect evidence and identify learning gaps.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

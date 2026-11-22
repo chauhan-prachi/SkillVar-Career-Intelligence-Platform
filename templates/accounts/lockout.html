@@ -1,0 +1,2 @@
+{% extends "base.html" %}{% block title %}Too many attempts{% endblock %}
+{% block content %}<div class="empty"><h1>Too many failed sign-in attempts</h1><p>For your protection, sign-in is paused for 15 minutes. If you forgot your password, you can <a href="{% url 'password_reset' %}">reset it</a>.</p></div>{% endblock %}

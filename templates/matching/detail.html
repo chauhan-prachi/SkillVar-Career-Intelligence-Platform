@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load skillvar %}
+
+{% block title %}Match analysis · {{ m.job.title|default:"Job" }}{% endblock %}
+
+{% block content %}
+<div class="match-page">
+  <header class="match-heading d-flex flex-wrap justify-content-between align-items-start gap-3">
+    <div>
+      <a class="small text-secondary" href="{% url 'job_detail' m.job_id %}">← Back to job</a>
+      <p class="eyebrow mt-3 mb-2">Match analysis</p>
+      <h1 class="match-title">{{ m.job.title|default:"Untitled job" }}</h1>
+      <p class="match-subtitle mb-0">
+        {% if m.job.company %}{{ m.job.company }} · {% endif %}
+        Analyzed {{ m.created_at|date:"j M Y, H:i" }}
+      </p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{% url 'job_list' %}">All job analyses</a>
+  </header>
+
+  <section class="row g-3 mb-4" aria-label="Match summary">
+    <div class="col-md-4">
+      <article class="card metric-card metric-card-primary">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center gap-2">
+            <span class="metric-label">Match estimate</span>
+            <span class="badge badge-soft-blue">Overall</span>
+          </div>
+          <div class="metric">{{ r.score|pct }}</div>
+          <div class="progress" role="progressbar" aria-label="Overall match estimate" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ r.score|pct_int }}">
+            <div class="progress-bar" style="width: {{ r.score|pct }};"></div>
+          </div>
+          <p class="small text-secondary mt-3 mb-0">Includes resume context and self-reported skills at reduced credit.</p>
+        </div>
+      </article>
+    </div>
+    <div class="col-md-4">
+      <article class="card metric-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center gap-2">
+            <span class="metric-label">Conservative</span>
+            <span class="badge badge-outline">Assessed</span>
+          </div>
+          <div class="metric">{{ r.conservative|pct }}</div>
+          <div class="progress" role="progressbar" aria-label="Conservative match estimate" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ r.conservative|pct_int }}">
+            <div class="progress-bar" style="width: {{ r.conservative|pct }};"></div>
+          </div>
+          <p class="small text-secondary mt-3 mb-0">Uses the conservative value of assessment evidence.</p>
+        </div>
+      </article>
+    </div>
+    <div class="col-md-4">
+      <article class="card metric-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center gap-2">
+            <span class="metric-label">Evidence coverage</span>
+            <span class="badge badge-outline">Confidence</span>
+          </div>
+          <div class="metric">{{ r.evidence_coverage|pct }}</div>
+          <div class="progress" role="progressbar" aria-label="Evidence coverage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ r.evidence_coverage|pct_int }}">
+            <div class="progress-bar" style="width: {{ r.evidence_coverage|pct }};"></div>
+          </div>
+          <p class="small text-secondary mt-3 mb-0">{{ r.confidence }}</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="note small mb-4">
+    <strong>How to read this:</strong> this is an estimate for this job, not a probability of being hired. Resume claims receive reduced credit; assessment evidence supports the conservative score.
+    <span class="match-meta d-block mt-1">Formula {{ m.formula_version }}</span>
+  </div>
+
+  <div class="row g-4">
+    <section class="col-lg-8" aria-labelledby="alignment-title">
+      <div class="mb-3">
+        <p class="eyebrow mb-1">Requirements</p>
+        <h2 class="match-section-title" id="alignment-title">Skill alignment</h2>
+        <p class="small text-secondary mb-0">See which requirements have evidence and where to focus next.</p>
+      </div>
+      <div class="match-groups">
+        {% include "matching/_group.html" with title="Confirmed" items=groups.confirmed style="confirmed" %}
+        {% include "matching/_group.html" with title="Possible" items=groups.possible style="possible" %}
+        {% include "matching/_group.html" with title="Needs verification" items=groups.insufficient style="insufficient" %}
+        {% include "matching/_group.html" with title="Not demonstrated" items=groups.not_demonstrated style="not-demonstrated" %}
+        {% include "matching/_group.html" with title="Missing" items=groups.missing style="missing" %}
+      </div>
+    </section>
+
+    <aside class="col-lg-4">
+      <section class="card match-explanation mb-3">
+        <div class="card-body">
+          <p class="eyebrow mb-1">Transparency</p>
+          <h3 class="mb-2">Score breakdown</h3>
+          <p class="small text-secondary mb-3">The score uses only the components available for this comparison.</p>
+          <details>
+            <summary>View calculation details</summary>
+            <ul class="small mt-3 mb-3">
+              {% for line in r.explanation %}<li>{{ line }}</li>{% empty %}<li>No calculation details available.</li>{% endfor %}
+            </ul>
+            {% if r.experience_note %}<p class="small text-secondary">{{ r.experience_note }}</p>{% endif %}
+            <div class="border-top pt-3">
+              <div class="d-flex justify-content-between mb-2"><span class="small text-secondary">Required skills</span><strong class="small">{{ weights.required|pct }}</strong></div>
+              <div class="d-flex justify-content-between mb-2"><span class="small text-secondary">Preferred skills</span><strong class="small">{{ weights.preferred|pct }}</strong></div>
+              <div class="d-flex justify-content-between"><span class="small text-secondary">Experience</span><strong class="small">{{ weights.experience|pct }}</strong></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-body">
+          <p class="eyebrow mb-1">Build evidence</p>
+          <h3 class="mb-2">Strengthen your profile</h3>
+          <p class="small text-secondary mb-3">Practice a skill or verify what you already know.</p>
+          <a class="btn btn-primary w-100 mb-2" href="{% url 'assessment_list' %}">Take an assessment</a>
+          <a class="btn btn-outline-secondary w-100" href="{% url 'roadmap' %}">Open learning roadmap</a>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+{% endblock %}

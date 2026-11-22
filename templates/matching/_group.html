@@ -1,0 +1,26 @@
+{% load skillvar %}
+{% if items %}
+<section class="match-group match-group--{{ style|default:'possible' }}">
+  <header class="match-group-header">
+    <h3 class="match-group-title"><span class="match-group-dot" aria-hidden="true"></span>{{ title }}</h3>
+    <span class="match-group-count" aria-label="{{ items|length }} skills">{{ items|length }}</span>
+  </header>
+  <div class="match-skill-list">
+    {% for s in items %}
+      <article class="match-skill">
+        <div class="match-skill-top">
+          <div>
+            <div class="match-skill-name">{{ s.name }}</div>
+            <span class="match-skill-kind">{{ s.kind|capfirst }} requirement</span>
+          </div>
+          <div class="match-skill-credit">{{ s.expected|pct }}<small>credit</small></div>
+        </div>
+        <div class="match-skill-evidence">{{ s.label_code|code_label }}</div>
+        <div class="progress" role="progressbar" aria-label="{{ s.name }} evidence credit" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ s.expected|pct_int }}">
+          <div class="progress-bar" style="width: {{ s.expected|pct }};"></div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

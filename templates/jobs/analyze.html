@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Analyze a job description{% endblock %}
+{% block content %}<div class="mx-auto" style="max-width:46rem"><h1>Analyze a job description</h1>
+<p class="text-secondary">Paste a job description. SkillVar finds the skills it mentions, separates required from preferred, and shows the sentence each came from. You can correct anything afterwards.</p>
+<form method="post" novalidate data-loading="Analyzing…">{% csrf_token %}
+  {% include "includes/_field.html" with field=form.title %}{% include "includes/_field.html" with field=form.text %}
+  <button class="btn btn-primary" type="submit">Analyze</button> <a class="btn btn-link" href="{% url 'job_samples' %}">Browse sample jobs</a></form>
+<div class="note small mt-4">SkillVar does not scrape job sites. Paste text you are allowed to use. Only skills in the SkillVar taxonomy are recognized.</div></div>{% endblock %}

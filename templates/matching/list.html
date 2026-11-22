@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% load skillvar %}{% block title %}Match history{% endblock %}
+{% block content %}<h1>Match history</h1>
+{% if page.object_list %}<div class="card"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Job</th><th>Estimate</th><th>Date</th></tr></thead><tbody>
+{% for m in page %}<tr><th scope="row"><a href="{% url 'match_detail' m.pk %}">{{ m.job.title|default:"Untitled job" }}</a></th><td>{{ m.score|pct }}</td><td>{{ m.created_at|date:"j M Y H:i" }}</td></tr>{% endfor %}</tbody></table></div></div>{% include "includes/_pagination.html" %}
+{% else %}<div class="card"><div class="card-body empty">No matches yet. <a href="{% url 'job_analyze' %}">Analyze a job description</a> to create one.</div></div>{% endif %}{% endblock %}

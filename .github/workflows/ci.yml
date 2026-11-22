@@ -1,0 +1,26 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: skillvar_app, POSTGRES_PASSWORD: ci-password, POSTGRES_DB: skillvar }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U skillvar_app" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DEBUG: "1"
+      SECRET_KEY: ci-only-secret-key-not-used-anywhere-else-1234567890
+      DATABASE_URL: postgres://skillvar_app:ci-password@localhost:5432/skillvar
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11", cache: pip }
+      - run: pip install -r requirements-dev.txt
+      - run: pip check
+      - run: ruff check .
+      - run: python manage.py check
+      - run: python manage.py makemigrations --check --dry-run
+      - run: pytest

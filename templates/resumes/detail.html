@@ -1,0 +1,37 @@
+{% extends "base.html" %}{% load skillvar %}{% block title %}{{ resume.original_filename }}{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+  <div><h1 class="mb-1">{{ resume.original_filename }}</h1><p class="text-secondary mb-0">{{ resume.get_file_format_display }} · {{ resume.created_at|date:"j M Y" }}{% if resume.page_count %} · {{ resume.page_count }} page{{ resume.page_count|pluralize }}{% endif %}</p></div>
+  <div class="d-flex gap-2"><a class="btn btn-outline-secondary btn-sm" href="{% url 'resume_download' resume.pk %}">Download</a>
+    <form method="post" action="{% url 'resume_delete' resume.pk %}" data-confirm="Delete this resume and everything derived from it? This cannot be undone.">{% csrf_token %}<button class="btn btn-outline-danger btn-sm" type="submit">Delete</button></form></div>
+</div>
+{% for w in analysis.warnings %}<div class="alert alert-warning" role="alert">{{ w }}</div>{% endfor %}
+<div class="note small mb-4">Detected skills are <strong>claims from a document</strong>. A skill shown in your experience or projects is treated as <em>evidence-supported</em>; one that is only listed counts as <em>stated</em>. Neither is proof of ability: assessments are.</div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card mb-4"><div class="card-header">Detected skills ({{ skills|length }})</div>
+      {% if skills %}<div class="list-group list-group-flush">{% for rs in skills %}
+        <div class="list-group-item"><div class="d-flex justify-content-between align-items-start gap-2">
+          <div><strong>{{ rs.skill.name }}</strong> <span class="badge {% if rs.contextual %}badge-soft-blue{% else %}badge-outline{% endif %}">{% if rs.review == 'manual' %}Added by you{% elif rs.contextual %}In {{ rs.section }}{% else %}Listed{% endif %}</span>
+            {% if rs.review == 'rejected' %}<span class="badge text-bg-secondary">Rejected</span>{% elif rs.review == 'confirmed' %}<span class="badge text-bg-success">Confirmed</span>{% endif %}
+            {% if rs.snippet %}<div class="snippet">“{{ rs.snippet }}”</div>{% endif %}</div>
+          <form method="post" action="{% url 'resume_review' resume.pk %}" class="d-flex gap-1">{% csrf_token %}<input type="hidden" name="skill_id" value="{{ rs.skill_id }}">
+            {% if rs.review != 'rejected' %}<button class="btn btn-sm btn-outline-secondary" name="action" value="reject" type="submit">Not mine</button>{% endif %}
+            {% if rs.review != 'confirmed' and rs.review != 'manual' %}<button class="btn btn-sm btn-outline-primary" name="action" value="confirm" type="submit">Confirm</button>{% endif %}</form>
+        </div></div>{% endfor %}</div>
+      {% else %}<div class="card-body empty">No skills from the SkillVar taxonomy were detected. You can add skills manually below.</div>{% endif %}
+      <div class="card-body border-top"><form method="post" action="{% url 'resume_review' resume.pk %}" class="row g-2 align-items-end">{% csrf_token %}<input type="hidden" name="action" value="add">
+        <div class="col"><label class="form-label small" for="new_skill">Add a skill we missed</label><select class="form-select form-select-sm" id="new_skill" name="new_skill">{% for s in all_skills %}<option value="{{ s.pk }}">{{ s.name }}</option>{% endfor %}</select></div>
+        <div class="col-auto"><button class="btn btn-sm btn-primary" type="submit">Add</button></div></form></div>
+    </div>
+    <div class="card"><div class="card-header">Extracted text</div><div class="card-body"><details><summary class="small text-primary" style="cursor:pointer">Show what SkillVar read from this file</summary><pre class="mt-3 small" style="white-space:pre-wrap">{{ resume.extracted_text }}</pre></details></div></div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card mb-4"><div class="card-header">Details found (review and correct)</div><div class="card-body">
+      <form method="post" action="{% url 'resume_facts' resume.pk %}">{% csrf_token %}{% include "includes/_field.html" with field=facts_form.years_experience_stated %}{% include "includes/_field.html" with field=facts_form.education_stated %}
+        <button class="btn btn-sm btn-primary" type="submit">Save corrections</button><div class="form-text mt-2">Years are only read when the resume states them (for example “5 years of experience”). Saving also updates your profile.</div></form></div></div>
+    <div class="card"><div class="card-header">Resume checks: {{ analysis.checks_passed }} of {{ analysis.checks_total }} passed</div><ul class="list-group list-group-flush">
+      {% for q in analysis.quality %}<li class="list-group-item small"><span class="badge {% if q.passed %}text-bg-success{% else %}badge-outline{% endif %}">{% if q.passed %}Yes{% else %}No{% endif %}</span> <strong>{{ q.label }}</strong><div class="text-muted">{{ q.how }}</div></li>{% endfor %}</ul>
+      <div class="card-body small text-muted border-top">{{ analysis.method }} This is not an ATS score; each check lists exactly how it is decided.</div></div>
+  </div>
+</div>{% endblock %}

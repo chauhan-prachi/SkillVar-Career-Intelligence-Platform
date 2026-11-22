@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block title %}Your profile{% endblock %}
+{% block content %}<div class="mx-auto" style="max-width:44rem">
+  <p class="eyebrow mb-1">Step 1 of 2</p><h1>{% if editing %}Edit your profile{% else %}Tell us about your goals{% endif %}</h1>
+  <form method="post" novalidate>{% csrf_token %}
+    {% for e in form.non_field_errors %}<div class="alert alert-danger">{{ e }}</div>{% endfor %}
+    <div class="row"><div class="col-md-6">{% include "includes/_field.html" with field=form.career_goal %}</div><div class="col-md-6">{% include "includes/_field.html" with field=form.experience_level %}</div></div>
+    <div class="row"><div class="col-md-6">{% include "includes/_field.html" with field=form.education_level %}</div><div class="col-md-6">{% include "includes/_field.html" with field=form.field_of_study %}</div></div>
+    <div class="row"><div class="col-md-6">{% include "includes/_field.html" with field=form.years_experience %}</div><div class="col-md-6">{% include "includes/_field.html" with field=form.preferred_location %}</div></div>
+    <fieldset class="mb-3"><legend class="form-label fs-6">{{ form.preferred_roles.label }}</legend>{% for c in form.preferred_roles %}<div class="form-check">{{ c.tag }} <label class="form-check-label" for="{{ c.id_for_label }}">{{ c.choice_label }}</label></div>{% endfor %}</fieldset>
+    <button class="btn btn-primary" type="submit">Save and continue</button>
+  </form></div>{% endblock %}

@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% load skillvar %}{% block title %}Assessment history{% endblock %}
+{% block content %}<h1>Assessment history</h1>
+{% if page.object_list %}<div class="card"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Assessment</th><th>Score</th><th>Date</th></tr></thead><tbody>
+{% for a in page %}<tr><th scope="row"><a href="{% url 'attempt_result' a.pk %}">{{ a.assessment.title }}</a></th><td>{{ a.score|pct }}</td><td>{{ a.created_at|date:"j M Y H:i" }}</td></tr>{% endfor %}</tbody></table></div></div>{% include "includes/_pagination.html" %}
+{% else %}<div class="card"><div class="card-body empty">You have not taken an assessment yet. <a href="{% url 'assessment_list' %}">Start one</a>.</div></div>{% endif %}{% endblock %}

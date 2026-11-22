@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block title %}Upload resume{% endblock %}
+{% block content %}<div class="mx-auto" style="max-width:40rem"><h1>Upload a resume</h1>
+<p class="text-secondary">SkillVar extracts the text, finds skills from its taxonomy, and shows you everything it found so you can correct it. Your file is stored privately and is only visible to you.</p>
+<form method="post" enctype="multipart/form-data" novalidate data-loading="Uploading and analyzing…">{% csrf_token %}
+  {% include "includes/_field.html" with field=form.file %}
+  <button class="btn btn-primary" type="submit">Upload and analyze</button> <a class="btn btn-link" href="{% url 'resume_list' %}">Cancel</a>
+</form>
+<div class="note small mt-4"><strong>Limits.</strong> PDF or DOCX, up to a few MB, text-based. Scanned or image-only PDFs need OCR, which is not supported yet. Listing a skill on a resume counts as a <em>claim</em>, not proof.</div></div>{% endblock %}
