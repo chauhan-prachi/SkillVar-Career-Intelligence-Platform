@@ -35,7 +35,7 @@ def test_registration_creates_user_profile_and_logs_in(client):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("pw,expected", [("short1A!", "too short"), ("password1234", "too common"), ("48392017265", "entirely numeric")])
+@pytest.mark.parametrize("pw,expected", [("Ab1!", "too short"), ("password1234", "too common"), ("48392017265", "entirely numeric")])
 def test_password_validators_are_enforced(client, pw, expected):
     r = register(client, password1=pw, password2=pw)
     assert r.status_code == 200 and expected in r.content.decode().lower()

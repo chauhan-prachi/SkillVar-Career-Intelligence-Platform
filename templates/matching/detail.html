@@ -34,6 +34,7 @@
         </div>
       </article>
     </div>
+
     <div class="col-md-4">
       <article class="card metric-card">
         <div class="card-body">
@@ -49,6 +50,7 @@
         </div>
       </article>
     </div>
+
     <div class="col-md-4">
       <article class="card metric-card">
         <div class="card-body">
@@ -67,7 +69,9 @@
   </section>
 
   <div class="note small mb-4">
-    <strong>How to read this:</strong> this is an estimate for this job, not a probability of being hired. Resume claims receive reduced credit; assessment evidence supports the conservative score.
+    <strong>How to read this:</strong>
+    This is an estimate for this job, not the probability of being hired.
+    Resume claims receive reduced credit; assessment evidence supports the conservative score.
     <span class="match-meta d-block mt-1">Formula {{ m.formula_version }}</span>
   </div>
 
@@ -78,6 +82,7 @@
         <h2 class="match-section-title" id="alignment-title">Skill alignment</h2>
         <p class="small text-secondary mb-0">See which requirements have evidence and where to focus next.</p>
       </div>
+
       <div class="match-groups">
         {% include "matching/_group.html" with title="Confirmed" items=groups.confirmed style="confirmed" %}
         {% include "matching/_group.html" with title="Possible" items=groups.possible style="possible" %}
@@ -93,16 +98,37 @@
           <p class="eyebrow mb-1">Transparency</p>
           <h3 class="mb-2">Score breakdown</h3>
           <p class="small text-secondary mb-3">The score uses only the components available for this comparison.</p>
+
           <details>
-            <summary>View calculation details</summary>
+            <summary>How the score was calculated</summary>
+
             <ul class="small mt-3 mb-3">
-              {% for line in r.explanation %}<li>{{ line }}</li>{% empty %}<li>No calculation details available.</li>{% endfor %}
+              {% for line in r.explanation %}
+                <li>{{ line }}</li>
+              {% empty %}
+                <li>No calculation details available.</li>
+              {% endfor %}
             </ul>
-            {% if r.experience_note %}<p class="small text-secondary">{{ r.experience_note }}</p>{% endif %}
+
+            {% if r.experience_note %}
+              <p class="small text-secondary">{{ r.experience_note }}</p>
+            {% endif %}
+
             <div class="border-top pt-3">
-              <div class="d-flex justify-content-between mb-2"><span class="small text-secondary">Required skills</span><strong class="small">{{ weights.required|pct }}</strong></div>
-              <div class="d-flex justify-content-between mb-2"><span class="small text-secondary">Preferred skills</span><strong class="small">{{ weights.preferred|pct }}</strong></div>
-              <div class="d-flex justify-content-between"><span class="small text-secondary">Experience</span><strong class="small">{{ weights.experience|pct }}</strong></div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="small text-secondary">Required skills</span>
+                <strong class="small">{{ weights.required|pct }}</strong>
+              </div>
+
+              <div class="d-flex justify-content-between mb-2">
+                <span class="small text-secondary">Preferred skills</span>
+                <strong class="small">{{ weights.preferred|pct }}</strong>
+              </div>
+
+              <div class="d-flex justify-content-between">
+                <span class="small text-secondary">Experience</span>
+                <strong class="small">{{ weights.experience|pct }}</strong>
+              </div>
             </div>
           </details>
         </div>
